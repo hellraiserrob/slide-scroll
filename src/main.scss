@@ -1,0 +1,190 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-size: 18px;
+  line-height: 1.2em;
+  color: #333;
+  background: #fff;
+}
+
+html, body {
+  overflow-x: hidden;
+  margin: 0;
+} 
+
+body,
+button,
+input {
+  font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir,
+    segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto,
+    arial, sans-serif;
+}
+
+h1, h2, h3, h4, h5 {
+  font-weight: normal;
+  font-size: 15px;
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  font-size: 30px;
+  line-height: 35px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+h2 {
+  font-size: 20px;
+  font-weight: 400;
+  margin-bottom: 4px;
+}
+
+h3 {
+  color: #666;
+  font-size: 14px;
+}
+
+a {
+  color: blue;
+
+  &:focus {
+    outline: black 2px solid;
+  }
+}
+
+// #main {
+  // max-width: 1200px;
+  // margin: 50px auto;
+  // padding: 0 20px;
+// }
+
+.header {
+  position: relative;
+  padding: 50px 50px 50px 110px;
+
+  img {
+    position: absolute;
+    top: 60px;
+    left: 50px;
+  }
+}
+
+footer {
+  padding: 50px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.p20 {
+  padding: 20px;
+}
+
+.p50 {
+  padding: 50px;
+}
+
+.mb10 {
+  margin-bottom: 10px;
+}
+
+.mb20 {
+  margin-bottom: 20px;
+}
+
+.mb30 {
+  margin-bottom: 30px;
+}
+
+.mb40 {
+  margin-bottom: 40px;
+}
+.mb50 {
+  margin-bottom: 50px;
+}
+
+.slides {
+  overflow: hidden;
+  position: relative;
+  
+  &__slide {
+    height: 100vh;
+    height: -webkit-fill-available;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    transform: translateY(100%);
+    overflow: hidden;
+
+    background: #efefef;
+    color: #333;
+    
+    &:nth-child(odd) {
+      color: #fff;
+      background: #333;
+    }
+    
+    &__number {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 400px;
+      line-height: 1.1em;
+      border: 20px solid #333;
+      padding: 0 100px;
+    }
+
+    &:nth-child(odd) &__number {
+      border-color: #fff;
+    } 
+
+    &__progress {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      font-size: 30px;
+      line-height: 30px;
+    }
+
+    &--previous {
+      transform: translateY(100%);
+    }
+  }
+
+  &--below &__slide {
+    display: none;
+  }
+  
+  &--below &__slide:last-child {
+    display: block;
+    position: absolute;
+    top: auto;
+    bottom: 0;
+    height: 100vh;
+  }
+}
+
+
+.button {
+  border: 0;
+  padding: 10px 30px;
+  font-size: 18px;
+  background: transparent;
+  cursor: pointer;
+  transition: background ease 0.2s;
+  background-color: #fff;
+
+  &:hover {
+    background-color: #ddd;
+  }
+
+  &:focus {
+    outline: blue 2px solid;
+  }
+}
