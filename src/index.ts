@@ -11,9 +11,10 @@ const slides = document.querySelectorAll<HTMLElement>(`.slides`);
 
 slides.forEach(el => {
   const options: Options = {
-    el
+    el,
+    easing: "linear"
   };
-  const c = new SlideScroll(options)
+  const slides = new SlideScroll(options)
 
-  c.watch();
+  slides.watch();
 })

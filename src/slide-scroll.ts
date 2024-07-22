@@ -1,7 +1,15 @@
+/**
+ * base library for parallax effects when scrolling
+ */
+
 import fastdom from "fastdom";
 import InView from "./in-view";
 import easings from "./easings";
+import { Options } from "./interfaces";
 
+/**
+ * css classes
+ */
 const css = {
   top: "slides--top",
   active: "slides--active",
@@ -11,6 +19,14 @@ const css = {
   progress: "slides__slide__progress",
 };
 
+/**
+ * default options
+ */
+const defaults = {
+  easing: "linear",
+  slide: css.slide,
+  debug: false
+}
 
 export default class Slides extends InView {
   el: any;
@@ -22,17 +38,18 @@ export default class Slides extends InView {
   height: number;
   total: number;
   portion: number;
-  active: HTMLElement | null;
+  options: Options;
 
   constructor(ops) {
     super();
 
-    this.el = ops.el;
+    this.options = { ...defaults, ...ops}
+    this.el = this.options.el;
     this.els = {
-      slides: this.el.querySelectorAll(`.${css.slide}`)
+      slides: this.el.querySelectorAll(`.${this.options.slide}`)
     };
 
-    this.scrollHandler = this.scrollHandler.bind(this);
+    this.handleScroll = this.handleScroll.bind(this);
     this.handleResize = this.handleResize.bind(this);
 
     this.vw = window.innerWidth;
@@ -46,14 +63,37 @@ export default class Slides extends InView {
     }
   }
 
+  // kick off function 
+  watch() {
+    this.setHeight();
+    this.reset();
+    this.bind();
+
+    // call the scroll event straight away
+    this.handleScroll();
+  }
+
+  // set / reset initial values
   reset() {
     this.elTop = this.el.getBoundingClientRect().top;
     this.height = this.el.offsetHeight;
     this.total = this.els.slides.length;
     this.portion = 100 / this.total;
-    this.active = null;
   }
 
+  // for iOS devices
+  setHeight() {
+    this.el.style = `height: ${this.els.slides.length * 100}vh`
+    document.documentElement.style.setProperty("--vh", `${this.vh * 0.01}px`);
+  }
+
+  // event bindings
+  bind() {
+    window.addEventListener('resize', this.handleResize);
+    window.addEventListener('scroll', this.handleScroll, true);
+  }
+
+  // handler for the user resizing their browser
   handleResize() {
     const vw = window.innerWidth;
     const vh = window.innerHeight;
@@ -64,55 +104,40 @@ export default class Slides extends InView {
 
       this.setHeight();
       this.reset();
-      this.scrollHandler();
+      this.handleScroll();
     }
   }
 
-  setHeight() {
-    document.documentElement.style.setProperty('--vh', `${this.vh * 0.01}px`);
-  }
-
-  watch() {
-    this.setHeight();
-    this.reset();
-    this.unbind();
-    this.bind();
-
-    // call the scroll event straight away
-    this.scrollHandler();
-  }
-
-  bind() {
-    window.addEventListener('resize', this.handleResize);
-    window.addEventListener('scroll', this.scrollHandler, true);
-  }
-
-  unbind() {
-    window.removeEventListener('resize', this.handleResize);
-    window.removeEventListener('scroll', this.scrollHandler, true);
-  }
-
-  scrollHandler() {
+  // scolling handler 
+  handleScroll() {
     const scrolled = window.scrollY;
     const top = this.el.getBoundingClientRect().top + scrolled;
     const progress = ((scrolled - top + this.vh) / this.height) * 100;
     const offTheBottom = progress > 100;
 
+    if(this.options.debug) {
+      console.log(`Progress ${progress}`);
+    }
+
     if (!offTheBottom) {
       this.el.classList.remove(css.slidesBelow);
 
+      // loop through all of the slides
       this.els.slides.forEach((el, index) => {
         const min = index * this.portion;
         const max = min + this.portion;
         const progressEl = el.querySelector(`.${css.progress}`);
 
+        // this particular slide is in the viewport
         if (progress > min && progress <= max) {
           const sectionProgress = (progress - min) * this.total;
-          const easing = easings.linear(sectionProgress / 100);
+          const easing = easings[this.options.easing](sectionProgress / 100);
           const slideOffset = this.vh - (easing * this.vh);
           
-          progressEl.innerHTML = Math.round(sectionProgress);
-          el.style.opacity = '1';
+          fastdom.mutate(() => {
+            progressEl.innerHTML = Math.round(sectionProgress);
+            el.style.opacity = "1";
+          });
           
           // the first slide is always at the top for now
           if (index === 0 && this.top) {
@@ -125,10 +150,9 @@ export default class Slides extends InView {
               el.style.transform = `translate3d(0, ${slideOffset}px, 0)`;
             });
           }
-
-          this.active = el;
         }
         else {
+          // slide is not in viewport
           if (progress > max) {
             // we've scrolled passed it
             fastdom.mutate(() => {
@@ -137,12 +161,14 @@ export default class Slides extends InView {
             });
           }
           else {
+            // hide slide for performance
             el.style.opacity = "0";
           }
         }
       });
     }
     else {
+      // when a user has scrolled all the way past we can set the bottom item to absolute instead of fixed
       this.el.classList.add(css.slidesBelow);
     }
   }
