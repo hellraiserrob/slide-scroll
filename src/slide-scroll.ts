@@ -57,20 +57,28 @@ export default class Slides extends InView {
     this.top = false;
 
     window.scrollTo(0, 0);
-
-    if (this.top) {
-      this.el.classList.add(css.top);
-    }
   }
 
   // kick off function 
   watch() {
+    this.checkTop();
     this.setHeight();
     this.reset();
     this.bind();
 
     // call the scroll event straight away
     this.handleScroll();
+  }
+
+  checkTop() {
+    this.top = this.el.getBoundingClientRect().top < this.vh;
+
+    if (this.top) {
+      this.el.classList.add(css.top);
+    }
+    else {
+      this.el.classList.remove(css.top);
+    }
   }
 
   // set / reset initial values
@@ -102,6 +110,7 @@ export default class Slides extends InView {
       this.vw = vw;
       this.vh = vh;
 
+      this.checkTop();
       this.setHeight();
       this.reset();
       this.handleScroll();
@@ -116,7 +125,11 @@ export default class Slides extends InView {
     const offTheBottom = progress > 100;
 
     if(this.options.debug) {
-      console.log(`Progress ${progress}`);
+      console.log(`scrolled ${scrolled}`);
+      console.log(`elTop ${this.elTop}`);
+      console.log(`top ${top}`);
+      console.log(`height ${this.height}`);
+      console.log(`progress ${progress}`);
     }
 
     if (!offTheBottom) {
@@ -132,24 +145,19 @@ export default class Slides extends InView {
         if (progress > min && progress <= max) {
           const sectionProgress = (progress - min) * this.total;
           const easing = easings[this.options.easing](sectionProgress / 100);
+          
           const slideOffset = this.vh - (easing * this.vh);
+          const progressOpacity = easing;
+          const progressOffset = 100 - (100 * easing);
           
           fastdom.mutate(() => {
-            progressEl.innerHTML = Math.round(sectionProgress);
             el.style.opacity = "1";
+            el.style.transform = `translate3d(0, ${slideOffset}px, 0)`;
+
+            progressEl.innerHTML = Math.round(sectionProgress);
+            progressEl.style.opacity = progressOpacity;
+            progressEl.style.transform = `translate3d(0, ${progressOffset}px, 0)`;
           });
-          
-          // the first slide is always at the top for now
-          if (index === 0 && this.top) {
-            fastdom.mutate(() => {
-              el.style.transform = `translate3d(0, ${this.elTop}, 0)`;
-            });
-          }
-          else {
-            fastdom.mutate(() => {
-              el.style.transform = `translate3d(0, ${slideOffset}px, 0)`;
-            });
-          }
         }
         else {
           // slide is not in viewport
