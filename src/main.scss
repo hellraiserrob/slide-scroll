@@ -128,16 +128,31 @@ footer {
       color: #fff;
       background: #333;
     }
+
+    .line {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      height: 30px;
+      width: 0;
+      background: red;
+    }
     
     &__number {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 400px;
-      line-height: 1.1em;
+      font-size: 200px;
+      line-height: 1.5em;
       border: 20px solid #333;
       padding: 0 100px;
+      
+      @media (min-width: 600px) {
+        font-size: 400px;
+        line-height: 1.1em;
+      }
     }
 
     &:nth-child(odd) &__number {

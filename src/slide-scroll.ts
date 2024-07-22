@@ -144,19 +144,23 @@ export default class Slides extends InView {
         // this particular slide is in the viewport
         if (progress > min && progress <= max) {
           const sectionProgress = (progress - min) * this.total;
-          const easing = easings[this.options.easing](sectionProgress / 100);
-          
+          const easing = easings.linear(sectionProgress / 100);
           const slideOffset = this.vh - (easing * this.vh);
-          const progressOpacity = easing;
-          const progressOffset = 100 - (100 * easing);
+          // const progressOpacity = easing;
           
           fastdom.mutate(() => {
             el.style.opacity = "1";
             el.style.transform = `translate3d(0, ${slideOffset}px, 0)`;
-
+            
             progressEl.innerHTML = Math.round(sectionProgress);
-            progressEl.style.opacity = progressOpacity;
-            progressEl.style.transform = `translate3d(0, ${progressOffset}px, 0)`;
+
+            this.options.modifiers?.forEach(modifier => {
+              const modeEasing = easings[this.options.easing](sectionProgress / 100);
+              const modEl = el.querySelector(modifier.selector);
+              const modVal = (modifier.start + (modifier.end - modifier.start) * modeEasing);
+
+              modEl.style[modifier.property] = `${modVal}${modifier.unit}`;
+            });
           });
         }
         else {

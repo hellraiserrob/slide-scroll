@@ -12,7 +12,14 @@ const slides = document.querySelectorAll<HTMLElement>(`.slides`);
 slides.forEach(el => {
   const options: Options = {
     el,
-    easing: "linear"
+    easing: "easeInOutCubic",
+    modifiers: [{
+      selector: ".line",
+      property: "width",
+      start: 0,
+      end: 100,
+      unit: "%"
+    }]
   };
   const slides = new SlideScroll(options)
 
