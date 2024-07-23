@@ -139,27 +139,29 @@ export default class Slides extends InView {
       this.els.slides.forEach((el, index) => {
         const min = index * this.portion;
         const max = min + this.portion;
-        const progressEl = el.querySelector(`.${css.progress}`);
 
         // this particular slide is in the viewport
         if (progress > min && progress <= max) {
           const sectionProgress = (progress - min) * this.total;
           const easing = easings.linear(sectionProgress / 100);
           const slideOffset = this.vh - (easing * this.vh);
-          // const progressOpacity = easing;
+          const modeEasing = easings[this.options.easing](sectionProgress / 100);
           
           fastdom.mutate(() => {
             el.style.opacity = "1";
             el.style.transform = `translate3d(0, ${slideOffset}px, 0)`;
-            
-            progressEl.innerHTML = Math.round(sectionProgress);
 
             this.options.modifiers?.forEach(modifier => {
-              const modeEasing = easings[this.options.easing](sectionProgress / 100);
               const modEl = el.querySelector(modifier.selector);
-              const modVal = (modifier.start + (modifier.end - modifier.start) * modeEasing);
+              
+              if(modEl && typeof modifier.property !== "undefined" && typeof modifier.start !== "undefined" && typeof modifier.end !== "undefined"){
+                const modVal = (modifier.start + (modifier.end - modifier.start) * modeEasing);
+                modEl.style[modifier.property] = `${modVal}${modifier.unit}`;
+              }
 
-              modEl.style[modifier.property] = `${modVal}${modifier.unit}`;
+              if(modEl && typeof modifier.callback === "function") {
+                modifier.callback(modEl, sectionProgress);
+              }
             });
           });
         }
@@ -169,7 +171,6 @@ export default class Slides extends InView {
             // we've scrolled passed it
             fastdom.mutate(() => {
               el.style.transform = "translate3d(0, 0, 0)";
-              progressEl.innerHTML = "100"
             });
           }
           else {

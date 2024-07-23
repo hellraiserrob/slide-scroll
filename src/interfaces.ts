@@ -4,10 +4,11 @@
 
 export interface Modifier {
   selector: string,
-  property: string,
-  start: number,
-  end: number,
-  unit: string
+  property?: string,
+  start?: number,
+  end?: number,
+  unit?: string,
+  callback?: Function
 }
 
 export interface Options {

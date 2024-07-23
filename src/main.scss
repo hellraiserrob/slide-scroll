@@ -143,10 +143,10 @@ footer {
       position: absolute;
       top: 0;
       left: 50%;
-      height: 30px;
+      height: 0;
       transform: translate(-50%, 0);
-      width: 300px;
-      background: orange;
+      width: 30px;
+      background: blue;
     }
     
     &__number {
@@ -158,8 +158,8 @@ footer {
       line-height: 1.5em;
       border: 20px solid #333;
       padding: 0 100px;
-      background: rgba(#fff, 0.5);
-      backdrop-filter: sepia(90%);
+      // background: rgba(#fff, 0.5);
+      // backdrop-filter: blur(50px);
       
       @media (min-width: 600px) {
         font-size: 400px;
@@ -169,10 +169,10 @@ footer {
 
     &:nth-child(odd) &__number {
       border-color: #fff;
-      background: rgba(#333, 0.5);
+      // background: rgba(#333, 0.5);
     } 
 
-    &__progress {
+    .progress {
       position: absolute;
       right: 10px;
       top: 10px;

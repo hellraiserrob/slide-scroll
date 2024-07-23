@@ -25,6 +25,11 @@ slides.forEach(el => {
       start: 0,
       end: 100,
       unit: "%"
+    }, {
+      selector: ".progress",
+      callback: function(el, progress) {
+        el.innerHTML = `${Math.ceil(progress)}%`
+      }
     }]
   };
   const slides = new SlideScroll(options)
