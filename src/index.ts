@@ -19,6 +19,12 @@ slides.forEach(el => {
       start: 0,
       end: 100,
       unit: "%"
+    }, {
+      selector: ".box",
+      property: "height",
+      start: 0,
+      end: 100,
+      unit: "%"
     }]
   };
   const slides = new SlideScroll(options)
